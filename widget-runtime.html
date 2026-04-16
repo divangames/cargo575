@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
+    />
+    <style>
+      :root {
+        --mvw-font-family: "Inter", "Segoe UI", Arial, sans-serif;
+        --mvw-font-size: 14px;
+        --mvw-font-weight: 300;
+        --mvw-label-weight: 400;
+        --mvw-value-weight: 500;
+        --mvw-icon-size: 14px;
+        --mvw-gap: 10px;
+        --mvw-item-gap: 6px;
+        --mvw-divider-color: #d5dbe7;
+        --mvw-text-color: #20242d;
+        --mvw-label-color: #8d93a1;
+        --mvw-value-color: #111827;
+      }
+
+      body {
+        margin: 0;
+        background: transparent;
+      }
+
+      .mvw {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: var(--mvw-gap);
+        padding: 4px 0;
+        color: var(--mvw-text-color);
+        font-family: var(--mvw-font-family);
+        font-size: var(--mvw-font-size);
+        font-weight: var(--mvw-font-weight);
+        line-height: 1.15;
+      }
+      .mvw__item {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--mvw-item-gap);
+      }
+      .mvw__icon {
+        width: var(--mvw-icon-size);
+        height: var(--mvw-icon-size);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--mvw-icon-size);
+        line-height: 1;
+        opacity: 0.68;
+      }
+      .mvw__label {
+        color: var(--mvw-label-color);
+        font-weight: var(--mvw-label-weight);
+        letter-spacing: 0.02em;
+      }
+      .mvw__value {
+        color: var(--mvw-value-color);
+        font-weight: var(--mvw-value-weight);
+      }
+      .mvw__divider {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--mvw-divider-color);
+        margin: 0 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="metrika-views-widget" class="mvw">
+      <span class="mvw__item">
+        <i class="ph ph-eye mvw__icon" aria-hidden="true"></i>
+        <span class="mvw__label">Просмотры</span>
+        <span class="mvw__value" data-role="views">...</span>
+      </span>
+      <span class="mvw__divider" aria-hidden="true"></span>
+      <span class="mvw__item">
+        <i class="ph ph-calendar-blank mvw__icon" aria-hidden="true"></i>
+        <span class="mvw__label">Дата</span>
+        <span class="mvw__value" data-role="date"></span>
+      </span>
+    </div>
+
+    <script>
+      (function () {
+        var qs = new URLSearchParams(window.location.search);
+        var pageUrl = qs.get("pageUrl") || "";
+        var dataUrl = qs.get("dataUrl") || "";
+        var dateMode = qs.get("dateMode") || "json";
+        var manualDate = qs.get("manualDate") || "";
+
+        var root = document.getElementById("metrika-views-widget");
+        var viewsNode = root.querySelector('[data-role="views"]');
+        var dateNode = root.querySelector('[data-role="date"]');
+        dateNode.textContent = manualDate;
+
+        if (!dataUrl) {
+          viewsNode.textContent = "н/д";
+          return;
+        }
+
+        fetch(dataUrl)
+          .then(function (res) {
+            if (!res.ok) throw new Error();
+            return res.json();
+          })
+          .then(function (data) {
+            var requested = normalize(pageUrl);
+            var views = 0;
+            if (requested && data && data.viewsByPage) {
+              views = findByPage(data.viewsByPage, requested);
+              if (views === null) {
+                viewsNode.textContent = "н/д";
+                return;
+              }
+            } else if (data && typeof data.views === "number") {
+              views = data.views;
+            }
+            viewsNode.textContent = views.toLocaleString("ru-RU");
+
+            if (dateMode === "json" && data && data.updatedAt) {
+              dateNode.textContent = formatDate(data.updatedAt);
+            }
+          })
+          .catch(function () {
+            viewsNode.textContent = "н/д";
+          });
+
+        function findByPage(map, requested) {
+          var keys = Object.keys(map || {});
+          for (var i = 0; i < keys.length; i += 1) {
+            if (normalize(keys[i]) === requested) {
+              return typeof map[keys[i]] === "number" ? map[keys[i]] : 0;
+            }
+          }
+          return null;
+        }
+        function normalize(url) {
+          return String(url || "").trim().replace(/\/+$/, "").toLowerCase();
+        }
+        function formatDate(iso) {
+          var d = new Date(iso);
+          if (Number.isNaN(d.getTime())) return "";
+          var day = String(d.getDate()).padStart(2, "0");
+          var month = String(d.getMonth() + 1).padStart(2, "0");
+          return day + "." + month + "." + d.getFullYear();
+        }
+      })();
+    </script>
+  </body>
+</html>
