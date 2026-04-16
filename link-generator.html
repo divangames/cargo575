@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Генератор iframe для виджета просмотров</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+        color: #111;
+      }
+      label {
+        display: block;
+        margin: 12px 0 6px;
+        font-weight: 600;
+      }
+      input,
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 14px;
+      }
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+      button {
+        margin-top: 12px;
+        padding: 10px 14px;
+        border: 0;
+        border-radius: 10px;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .btn-secondary {
+        background: #e5e7eb;
+        color: #111827;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: end;
+      }
+      .row > div {
+        flex: 1;
+      }
+      .hint {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #6b7280;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+          "Liberation Mono", "Courier New", monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Генератор iframe для LPMotor</h2>
+    <div class="hint">
+      Вставьте URL статьи вида <code>https://575cargo.ru/slug</code>. На выходе получите готовый
+      <code>&lt;iframe ...&gt;</code> с нужным <code>pageUrl</code>.
+    </div>
+
+    <label for="pageUrl">URL страницы</label>
+    <input id="pageUrl" type="url" placeholder="https://575cargo.ru/novaya-statya" />
+
+    <div class="row">
+      <div>
+        <label for="manualDate">Дата для отображения</label>
+        <input id="manualDate" type="text" placeholder="08.04.2026" value="08.04.2026" />
+      </div>
+      <div>
+        <label for="height">Высота iframe</label>
+        <input id="height" type="number" value="32" min="20" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnGen" type="button">Сгенерировать iframe</button>
+      <button id="btnCopy" class="btn-secondary" type="button">Копировать код</button>
+    </div>
+
+    <label for="out">Результат (копируйте в LPMotor)</label>
+    <textarea id="out" readonly></textarea>
+
+    <script>
+      (function () {
+        var baseRuntime =
+          "https://divangames.github.io/cargo575/widget-runtime.html";
+        var dataUrl =
+          "https://raw.githubusercontent.com/divangames/cargo575/main/data/metrika-views.json";
+
+        var pageUrlInput = document.getElementById("pageUrl");
+        var manualDateInput = document.getElementById("manualDate");
+        var heightInput = document.getElementById("height");
+        var out = document.getElementById("out");
+        var btn = document.getElementById("btnGen");
+        var btnCopy = document.getElementById("btnCopy");
+
+        function escapeAttr(s) {
+          return String(s || "")
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        }
+
+        function generate() {
+          var pageUrl = String(pageUrlInput.value || "").trim();
+          var manualDate = String(manualDateInput.value || "").trim();
+          var height = Number(heightInput.value || 32);
+
+          if (!pageUrl) {
+            out.value = "Введите URL страницы.";
+            return;
+          }
+
+          var src =
+            baseRuntime +
+            "?dataUrl=" +
+            encodeURIComponent(dataUrl) +
+            "&pageUrl=" +
+            encodeURIComponent(pageUrl) +
+            "&dateMode=json" +
+            "&manualDate=" +
+            encodeURIComponent(manualDate);
+
+          out.value =
+            "<iframe\n" +
+            '  src="' +
+            escapeAttr(src) +
+            '"\n' +
+            '  width="100%"\n' +
+            '  height="' +
+            height +
+            '"\n' +
+            '  style="border:0;overflow:hidden;background:transparent;"\n' +
+            '  loading="lazy"\n' +
+            "  referrerpolicy=\"no-referrer-when-downgrade\"\n" +
+            "></iframe>";
+        }
+
+        btn.addEventListener("click", generate);
+        btnCopy.addEventListener("click", function () {
+          if (!out.value) return;
+          out.select();
+          out.setSelectionRange(0, out.value.length);
+          navigator.clipboard
+            .writeText(out.value)
+            .then(function () {
+              btnCopy.textContent = "Скопировано";
+              setTimeout(function () {
+                btnCopy.textContent = "Копировать код";
+              }, 1500);
+            })
+            .catch(function () {
+              btnCopy.textContent = "Скопируйте вручную";
+            });
+        });
+        generate();
+      })();
+    </script>
+  </body>
+</html>
+
