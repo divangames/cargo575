@@ -63,6 +63,19 @@
 
 Скопируйте содержимое `lpmotor-metrika-widget.html` в HTML-блок страницы и опубликуйте.
 
+### Если LPMotor режет script
+
+Используйте iframe-режим:
+
+1. Включите GitHub Pages для репозитория (`Settings -> Pages -> Deploy from branch`).
+2. Убедитесь, что файл `widget-runtime.html` доступен по URL:
+   `https://<username>.github.io/<repo>/widget-runtime.html`
+3. Откройте `lpmotor-iframe-embed.html` и замените:
+   - `USERNAME` / `REPO`
+   - `dataUrl` на ваш raw JSON
+   - `pageUrl` на URL текущей страницы (например `https://575cargo.ru/blog`)
+4. Вставьте содержимое `lpmotor-iframe-embed.html` в LPMotor вместо скриптового виджета.
+
 ## Настройка внешнего вида (минимализм)
 
 Все настройки в `config.ui`:
