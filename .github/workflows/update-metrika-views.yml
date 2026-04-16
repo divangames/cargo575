@@ -24,6 +24,8 @@ jobs:
         env:
           METRIKA_COUNTER_ID: ${{ secrets.METRIKA_COUNTER_ID }}
           METRIKA_OAUTH_TOKEN: ${{ secrets.METRIKA_OAUTH_TOKEN }}
+          METRIKA_PAGE_URL: ${{ secrets.METRIKA_PAGE_URL }}
+          METRIKA_PAGE_URLS: ${{ secrets.METRIKA_PAGE_URLS }}
           METRIKA_PERIOD_START: 7daysAgo
           METRIKA_PERIOD_END: today
           METRIKA_OUTPUT_FILE: data/metrika-views.json
