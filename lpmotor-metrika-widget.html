@@ -1,0 +1,227 @@
+<!--
+  Безопасный виджет просмотров для LPMotor + Яндекс.Метрика через GitHub
+  Вставьте этот блок в HTML-блок конструктора.
+-->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"
+/>
+
+<div id="metrika-views-widget" class="mvw">
+  <span class="mvw__item">
+    <i class="ph ph-eye mvw__icon" aria-hidden="true"></i>
+    <span class="mvw__label">Просмотры</span>
+    <span class="mvw__value" data-role="views">...</span>
+  </span>
+  <span class="mvw__divider" data-role="divider" aria-hidden="true"></span>
+  <span class="mvw__item">
+    <i class="ph ph-calendar-blank mvw__icon" aria-hidden="true"></i>
+    <span class="mvw__label">Дата</span>
+    <span class="mvw__value" data-role="date"></span>
+  </span>
+</div>
+
+<style>
+  .mvw {
+    display: flex;
+    align-items: center;
+    justify-content: var(--mvw-justify-content, flex-start);
+    width: var(--mvw-width, 100%);
+    gap: var(--mvw-gap, 10px);
+    padding: var(--mvw-padding-y, 6px) var(--mvw-padding-x, 0px);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--mvw-text-color, #20242d);
+    box-shadow: none;
+    font-family: var(--mvw-font-family, "Inter", "Segoe UI", Arial, sans-serif);
+    font-size: var(--mvw-font-size, 14px);
+    font-weight: var(--mvw-font-weight, 300);
+    line-height: 1.15;
+  }
+
+  .mvw__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--mvw-item-gap, 8px);
+  }
+
+  .mvw__icon {
+    width: var(--mvw-icon-size, 14px);
+    height: var(--mvw-icon-size, 14px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--mvw-icon-size, 14px);
+    line-height: 1;
+    opacity: 0.68;
+  }
+
+  .mvw__label {
+    color: var(--mvw-label-color, #8d93a1);
+    font-weight: var(--mvw-label-weight, 400);
+    letter-spacing: 0.02em;
+  }
+
+  .mvw__value {
+    color: var(--mvw-value-color, #111827);
+    font-weight: var(--mvw-value-weight, 500);
+  }
+
+  .mvw__divider {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--mvw-divider-color, #d5dbe7);
+    margin: 0 2px;
+  }
+</style>
+
+<script>
+  (function () {
+    /*
+      Безопасный режим:
+      - в виджете нет токена и counterId
+      - виджет читает готовый JSON из GitHub Pages/Raw
+    */
+    var config = {
+      pageUrl: "https://example.com/page", // <-- URL страницы для этого виджета
+      manualDate: "08.04.2026", // <-- дата вручную
+      dataUrl:
+        "https://raw.githubusercontent.com/divangames/cargo575/main/data/metrika-views.json",
+      useJsonUpdatedDate: true, // если true, берем дату из JSON updatedAt
+      ui: {
+        // Полный кастом под ваш дизайн:
+        fontFamily: "'Inter', 'Segoe UI', Arial, sans-serif",
+        fontSize: "14px",
+        fontWeight: "300",
+        labelWeight: "400",
+        valueWeight: "500",
+        iconSize: "14px",
+        radius: "0px",
+        paddingX: "0px",
+        paddingY: "4px",
+        gap: "10px",
+        itemGap: "6px",
+        align: "left", // left | center | right
+        width: "100%", // например: "auto" или "100%"
+        background: "transparent",
+        borderColor: "transparent",
+        dividerColor: "#d5dbe7",
+        showDivider: true, // true | false
+        textColor: "#20242d",
+        labelColor: "#8d93a1",
+        valueColor: "#111827",
+        shadow: "none"
+      }
+    };
+
+    var root = document.getElementById("metrika-views-widget");
+    if (!root) return;
+
+    var viewsNode = root.querySelector('[data-role="views"]');
+    var dateNode = root.querySelector('[data-role="date"]');
+    var dividerNode = root.querySelector('[data-role="divider"]');
+    dateNode.textContent = config.manualDate;
+    applyUiConfig(root, config.ui || {}, dividerNode);
+
+    function applyUiConfig(el, ui, divider) {
+      el.style.setProperty("--mvw-font-family", ui.fontFamily || "");
+      el.style.setProperty("--mvw-font-size", ui.fontSize || "");
+      el.style.setProperty("--mvw-font-weight", ui.fontWeight || "");
+      el.style.setProperty("--mvw-label-weight", ui.labelWeight || "");
+      el.style.setProperty("--mvw-value-weight", ui.valueWeight || "");
+      el.style.setProperty("--mvw-icon-size", ui.iconSize || "");
+      el.style.setProperty("--mvw-radius", ui.radius || "");
+      el.style.setProperty("--mvw-padding-x", ui.paddingX || "");
+      el.style.setProperty("--mvw-padding-y", ui.paddingY || "");
+      el.style.setProperty("--mvw-gap", ui.gap || "");
+      el.style.setProperty("--mvw-item-gap", ui.itemGap || "");
+      el.style.setProperty("--mvw-bg", ui.background || "");
+      el.style.setProperty("--mvw-border-color", ui.borderColor || "");
+      el.style.setProperty("--mvw-divider-color", ui.dividerColor || "");
+      el.style.setProperty("--mvw-text-color", ui.textColor || "");
+      el.style.setProperty("--mvw-label-color", ui.labelColor || "");
+      el.style.setProperty("--mvw-value-color", ui.valueColor || "");
+      el.style.setProperty("--mvw-shadow", ui.shadow || "");
+      el.style.setProperty("--mvw-width", ui.width || "");
+      el.style.setProperty("--mvw-justify-content", toJustify(ui.align));
+      if (divider) {
+        divider.style.display = ui.showDivider === false ? "none" : "";
+      }
+    }
+
+    function toJustify(align) {
+      if (align === "center") return "center";
+      if (align === "right") return "flex-end";
+      return "flex-start";
+    }
+
+    fetch(config.dataUrl, { method: "GET" })
+      .then(function (res) {
+        if (!res.ok) {
+          throw new Error("HTTP " + res.status);
+        }
+        return res.json();
+      })
+      .then(function (data) {
+        var views = 0;
+        var requestedPageUrl = normalizeUrl(config.pageUrl || "");
+        var viewsByPage = (data && data.viewsByPage) || null;
+
+        if (requestedPageUrl && viewsByPage && typeof viewsByPage === "object") {
+          views = getViewsFromMap(viewsByPage, requestedPageUrl);
+          if (views === null) {
+            viewsNode.textContent = "н/д";
+            return;
+          }
+        } else {
+          var jsonPageUrl = normalizeUrl((data && data.pageUrl) || "");
+          var hasPageUrlCheck = requestedPageUrl.length > 0 && jsonPageUrl.length > 0;
+          if (hasPageUrlCheck && requestedPageUrl !== jsonPageUrl) {
+            viewsNode.textContent = "н/д";
+            return;
+          }
+          if (data && typeof data.views === "number") {
+            views = data.views;
+          }
+        }
+        if (config.useJsonUpdatedDate && data && data.updatedAt) {
+          var formattedDate = formatIsoDate(data.updatedAt);
+          if (formattedDate) {
+            dateNode.textContent = formattedDate;
+          }
+        }
+        viewsNode.textContent = views.toLocaleString("ru-RU");
+      })
+      .catch(function () {
+        viewsNode.textContent = "н/д";
+      });
+
+    function formatIsoDate(isoString) {
+      var date = new Date(isoString);
+      if (Number.isNaN(date.getTime())) return "";
+      var day = String(date.getDate()).padStart(2, "0");
+      var month = String(date.getMonth() + 1).padStart(2, "0");
+      var year = String(date.getFullYear());
+      return day + "." + month + "." + year;
+    }
+
+    function normalizeUrl(url) {
+      return String(url || "")
+        .trim()
+        .replace(/\/+$/, "")
+        .toLowerCase();
+    }
+
+    function getViewsFromMap(map, normalizedUrl) {
+      var keys = Object.keys(map);
+      for (var i = 0; i < keys.length; i += 1) {
+        if (normalizeUrl(keys[i]) === normalizedUrl) {
+          return typeof map[keys[i]] === "number" ? map[keys[i]] : 0;
+        }
+      }
+      return null;
+    }
+  })();
+</script>
